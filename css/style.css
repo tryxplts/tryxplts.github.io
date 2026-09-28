@@ -1,0 +1,310 @@
+/* oxy — stylesheet
+   01  tokens
+   02  base
+   03  background (silk + waifu)
+   04  loader
+   05  terminal
+   06  motion
+   07  responsive
+ */
+
+@font-face {
+    font-family: "JetBrainsMono Nerd Font";
+    src: url("https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@master/patched-fonts/JetBrainsMono/NoLigatures/JetBrainsMonoNLNerdFontMono-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrainsMono Nerd Font";
+    src: url("https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@master/patched-fonts/JetBrainsMono/NoLigatures/JetBrainsMonoNLNerdFontMono-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0a0a0c;
+    --text: #f2f2f4;
+    --muted: #9a9aa3;
+    --dim: #63636c;
+    --border-strong: #36363f;
+
+    --font-hand: "JetBrainsMono Nerd Font", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-hand);
+    background-color: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+/* ---------- background ---------- */
+
+/* Silk canvas background (WebGL renders into this) */
+#silk {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* random transparent waifu behind the content */
+#waifu {
+    position: fixed;
+    right: 2vw;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    max-height: 70vh;
+    max-width: 28vw;
+    object-fit: contain;
+    opacity: 0.22;
+    z-index: 0;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 35%);
+    mask-image: linear-gradient(to top, transparent 0%, #000 35%);
+}
+
+#waifu-left {
+    position: fixed;
+    left: 2vw;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    max-height: 70vh;
+    max-width: 28vw;
+    object-fit: contain;
+    opacity: 0.22;
+    z-index: 0;
+    pointer-events: none;
+    transform: scaleX(-1);
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 35%);
+    mask-image: linear-gradient(to top, transparent 0%, #000 35%);
+}
+
+/* ---------- loader ---------- */
+
+body.loading {
+    overflow: hidden;
+}
+
+#loader {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    transition: opacity 0.45s ease;
+}
+
+#loader.done {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader-inner {
+    font-family: var(--font-hand);
+    font-size: clamp(24px, 5vw, 44px);
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    padding: 0 24px;
+}
+
+.loader-inner .caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    margin-left: 4px;
+    vertical-align: -0.12em;
+    background: #ffffff;
+    animation: blink 0.9s steps(1) infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+#loader-sub {
+    min-height: 1.6em;
+    margin-top: 12px;
+    font-family: var(--font-hand);
+    font-size: clamp(13px, 2.4vw, 17px);
+    font-weight: 400;
+    color: var(--muted);
+}
+
+#loader-skip {
+    margin-top: 18px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--dim);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#loader-skip.show {
+    opacity: 1;
+}
+
+/* ---------- terminal ---------- */
+
+.term {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 24px;
+    font-family: var(--font-hand);
+    font-size: 15px;
+    line-height: 2;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
+}
+
+.term-line {
+    opacity: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+body.entered .term-line {
+    animation: rise 0.4s var(--ease-out) both;
+}
+
+body.entered .term-line:nth-child(1) { animation-delay: 0.05s; }
+body.entered .term-line:nth-child(2) { animation-delay: 0.25s; }
+body.entered .term-line:nth-child(3) { animation-delay: 0.55s; }
+body.entered .term-line:nth-child(4) { animation-delay: 0.75s; }
+body.entered .term-line:nth-child(5) { animation-delay: 1.05s; }
+body.entered .term-line:nth-child(6) { animation-delay: 1.25s; }
+body.entered .term-line:nth-child(7) { animation-delay: 1.4s; }
+body.entered .term-line:nth-child(8) { animation-delay: 1.55s; }
+body.entered .term-line:nth-child(9) { animation-delay: 1.7s; }
+body.entered .term-line:nth-child(10) { animation-delay: 1.85s; }
+body.entered .term-line:nth-child(11) { animation-delay: 2s; }
+body.entered .term-line:nth-child(12) { animation-delay: 2.15s; }
+body.entered .term-line:nth-child(13) { animation-delay: 2.3s; }
+body.entered .term-line:nth-child(14) { animation-delay: 2.45s; }
+body.entered .term-line:nth-child(15) { animation-delay: 2.6s; }
+body.entered .term-line:nth-child(16) { animation-delay: 2.75s; }
+
+.term .prompt {
+    color: var(--dim);
+    user-select: none;
+}
+
+.term .cmd {
+    color: #ffffff;
+}
+
+.term .out {
+    color: var(--muted);
+    padding-left: 2ch;
+}
+
+.term .out a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-strong);
+}
+
+.term .out a:hover {
+    border-bottom-color: #ffffff;
+}
+
+.caret-sm {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.05em;
+    vertical-align: -0.15em;
+    background: #ffffff;
+    animation: blink 0.9s steps(1) infinite;
+}
+
+/* ---------- motion ---------- */
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1100px) {
+    #waifu, #waifu-left {
+        max-height: 52vh;
+        max-width: 24vw;
+        opacity: 0.16;
+    }
+}
+
+@media (max-width: 640px) {
+    #waifu {
+        max-height: 60vh;
+        max-width: 90vw;
+        right: 0;
+        opacity: 0.14;
+    }
+    #waifu-left {
+        display: none;
+    }
+    .term {
+        font-size: 14px;
+        padding: 32px 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #loader {
+        transition: none;
+    }
+    .loader-inner .caret,
+    .caret-sm {
+        animation: none;
+    }
+    .term-line,
+    body.entered .term-line {
+        opacity: 1;
+        animation: none;
+    }
+}
