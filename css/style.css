@@ -330,6 +330,269 @@ body.entered .term-line:nth-child(16) { animation-delay: 2.75s; }
     animation: blink 0.9s steps(1) infinite;
 }
 
+/* ---------- player ---------- */
+
+#player {
+    position: fixed;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 6;
+    width: min(760px, calc(100vw - 24px));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    background:
+        linear-gradient(150deg, rgba(30, 42, 64, 0.46), rgba(8, 12, 20, 0.34)) padding-box,
+        linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.28)) border-box;
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    box-shadow:
+        0 18px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-family: var(--font-hand);
+    user-select: none;
+    overflow: hidden;
+    transition: opacity 0.4s ease, transform 0.4s var(--ease-out);
+}
+
+#player > * {
+    position: relative;
+    z-index: 1;
+}
+
+#player::before {
+    content: "";
+    position: absolute;
+    inset: -60% -30%;
+    z-index: 0;
+    background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.10) 50%, transparent 62%);
+    transform: translateX(-60%);
+    animation: glass-sheen 11s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes glass-sheen {
+    0%, 52% { transform: translateX(-60%); opacity: 0; }
+    66% { opacity: 1; }
+    100% { transform: translateX(60%); opacity: 0; }
+}
+
+body.loading #player {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+    pointer-events: none;
+}
+
+.player-play {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: #f2f5f8;
+    color: #070b12;
+    cursor: pointer;
+    transition: transform 0.2s var(--ease-out), background 0.2s ease;
+}
+
+.player-play:hover { transform: scale(1.06); background: #ffffff; }
+.player-play:active { transform: scale(0.97); }
+.player-play svg { width: 20px; height: 20px; }
+.player-play .icon-pause { display: none; }
+#player.is-playing .player-play .icon-play { display: none; }
+#player.is-playing .player-play .icon-pause { display: block; }
+
+.player-art {
+    position: relative;
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 11px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.45),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.player-cover {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transform: scale(1.02);
+    filter: saturate(0.96);
+    transition: transform 0.6s var(--ease-out), filter 0.6s ease;
+}
+
+#player:hover .player-cover {
+    transform: scale(1.07);
+    filter: saturate(1.04);
+}
+
+.player-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(125deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0) 44%);
+    opacity: 0.45;
+}
+
+.player-eq {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 11px;
+    padding: 3px 4px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.38);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.player-eq i { width: 2px; height: 4px; border-radius: 1px; background: #fff; }
+#player.is-playing .player-eq { opacity: 0.9; }
+#player.is-playing .player-eq i { animation: eq 0.9s ease-in-out infinite; }
+#player.is-playing .player-eq i:nth-child(2) { animation-delay: 0.18s; }
+#player.is-playing .player-eq i:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes eq {
+    0%, 100% { height: 3px; }
+    50% { height: 9px; }
+}
+
+.player-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.player-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 0;
+}
+.player-title { max-width: 100%; font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.player-sub { max-width: 100%; font-size: 10px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.player-timeline { display: flex; align-items: center; gap: 10px; }
+.player-time { flex: 0 0 auto; font-size: 10px; color: var(--dim); font-variant-numeric: tabular-nums; min-width: 2.6em; }
+.player-time:last-child { text-align: right; }
+
+.player-seek {
+    position: relative;
+    flex: 1 1 auto;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    touch-action: none;
+}
+
+.player-seek-track, .player-seek-fill {
+    position: absolute;
+    left: 0;
+    height: 3px;
+    border-radius: 2px;
+}
+.player-seek-track { right: 0; background: rgba(255, 255, 255, 0.14); }
+.player-seek-fill { width: 0%; background: linear-gradient(90deg, #8fb9dd, #e9f2fa); }
+.player-seek-knob {
+    position: absolute;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.10);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+.player-seek:hover .player-seek-knob,
+.player-seek:focus-visible .player-seek-knob,
+.player-seek.is-dragging .player-seek-knob { opacity: 1; }
+
+.player-vol { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
+
+.player-icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+.player-icon:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+.player-icon svg { width: 18px; height: 18px; }
+.player-icon .icon-muted { display: none; }
+#player.is-muted .player-icon .icon-vol { display: none; }
+#player.is-muted .player-icon .icon-muted { display: block; }
+
+.player-volume {
+    position: relative;
+    width: 88px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    touch-action: none;
+}
+.player-volume-track, .player-volume-fill {
+    position: absolute;
+    left: 0;
+    height: 3px;
+    border-radius: 2px;
+}
+.player-volume-track { right: 0; background: rgba(255, 255, 255, 0.14); }
+.player-volume-fill { width: 65%; background: #dfe9f2; }
+.player-volume-knob {
+    position: absolute;
+    left: 65%;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+.player-volume:hover .player-volume-knob,
+.player-volume:focus-visible .player-volume-knob,
+.player-volume.is-dragging .player-volume-knob { opacity: 1; }
+
+.player button:focus-visible,
+.player-seek:focus-visible,
+.player-volume:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.55);
+    outline-offset: 2px;
+}
+
+#player.is-missing .player-sub { color: #e08a8a; }
+
 /* ---------- motion ---------- */
 
 @keyframes rise {
@@ -354,6 +617,37 @@ body.entered .term-line:nth-child(16) { animation-delay: 2.75s; }
 }
 
 @media (max-width: 640px) {
+    #player {
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        width: calc(100vw - 16px);
+        bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    .player-art {
+        width: 44px;
+        height: 44px;
+        border-radius: 9px;
+    }
+    .player-play {
+        width: 40px;
+        height: 40px;
+    }
+    .player-time {
+        display: none;
+    }
+    .player-title {
+        font-size: 12px;
+    }
+    .player-sub {
+        font-size: 10px;
+    }
+    .player-body {
+        gap: 4px;
+    }
+    .player-volume {
+        width: 64px;
+    }
     #backdrop .pines {
         background-size: auto 100%;
     }

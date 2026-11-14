@@ -56,8 +56,57 @@
         <div class="term-line"><span class="prompt">oxy@dev:~$</span> <span class="caret-sm" aria-hidden="true"></span></div>
     </main>
 
+    <div id="player" class="player" role="region" aria-label="Music player">
+        <audio id="audio" src="assets/audio/rockin-around-the-christmas-tree.mp3" preload="metadata" loop playsinline data-title="Rockin' Around the Christmas Tree" data-artist="Brenda Lee"></audio>
+
+        <button id="play" class="player-play" type="button" aria-label="Play">
+            <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12 8 5.2Z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+        </button>
+
+        <div class="player-art" aria-hidden="true">
+            <img class="player-cover" src="assets/cover.jpg" alt="">
+            <span class="player-eq"><i></i><i></i><i></i></span>
+        </div>
+
+        <div class="player-body">
+            <div class="player-meta">
+                <div class="player-title">Rockin' Around the Christmas Tree</div>
+                <div class="player-sub">Brenda Lee</div>
+            </div>
+            <div class="player-timeline">
+                <span id="cur" class="player-time">0:00</span>
+                <div id="seek" class="player-seek" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+                    <div class="player-seek-track"></div>
+                    <div id="seek-fill" class="player-seek-fill"></div>
+                    <div class="player-seek-knob"></div>
+                </div>
+                <span id="dur" class="player-time">0:00</span>
+            </div>
+        </div>
+
+        <div class="player-vol">
+            <button id="mute" class="player-icon" type="button" aria-label="Mute">
+                <svg class="icon-vol" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/>
+                    <path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/>
+                    <path d="m16.5 9 5 5M21.5 9l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div id="vol" class="player-volume" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65" tabindex="0">
+                <div class="player-volume-track"></div>
+                <div id="vol-fill" class="player-volume-fill"></div>
+                <div class="player-volume-knob"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/silk.js"></script>
     <script src="js/snow.js"></script>
+    <script src="js/player.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
