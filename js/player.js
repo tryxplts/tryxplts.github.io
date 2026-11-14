@@ -126,7 +126,7 @@
         el.addEventListener('pointerdown', (e) => {
             dragging = true;
             el.classList.add('is-dragging');
-            if (el.setPointerCapture) el.setPointerCapture(e.pointerId);
+            try { if (el.setPointerCapture) el.setPointerCapture(e.pointerId); } catch (err) { /* synthetic events */ }
             onValue(ratioFromEvent(el, e));
             e.preventDefault();
         });
