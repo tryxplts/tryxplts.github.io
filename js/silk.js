@@ -1,4 +1,4 @@
-/* Winter smoke — domain-warped noise, midnight teal with a warm gold sheen. */
+/* Winter smoke - domain-warped noise. */
 (() => {
     'use strict';
 

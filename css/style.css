@@ -1,13 +1,3 @@
-/* oxy — stylesheet
-   01  tokens
-   02  base
-   03  background (silk + waifu)
-   04  loader
-   05  terminal
-   06  motion
-   07  responsive
- */
-
 @font-face {
     font-family: "JetBrainsMono Nerd Font";
     src: url("https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@master/patched-fonts/JetBrainsMono/NoLigatures/JetBrainsMonoNLNerdFontMono-Regular.ttf") format("truetype");
@@ -66,9 +56,9 @@ body {
     background: rgba(255, 255, 255, 0.22);
 }
 
-/* ---------- background ---------- */
+/* background */
 
-/* WebGL winter smoke */
+/* winter smoke */
 #silk {
     position: fixed;
     inset: 0;
@@ -78,7 +68,7 @@ body {
     pointer-events: none;
 }
 
-/* scenery above the smoke: moon, treeline, ground fog */
+/* scenery */
 #backdrop {
     position: fixed;
     inset: 0;
@@ -94,9 +84,20 @@ body {
     width: clamp(74px, 9vw, 148px);
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 42% 38%, #fdfbf1 0 40%, #e4e2d5 64%, #c3ced8 100%);
-    box-shadow: 0 0 60px 18px rgba(255, 250, 230, 0.08), 0 0 160px 70px rgba(150, 195, 255, 0.05);
-    opacity: 0.65;
+    background:
+        radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.32) 0 2%, rgba(255, 255, 255, 0) 7%),
+        radial-gradient(ellipse at 62% 60%, rgba(88, 100, 118, 0.14) 0 18%, rgba(88, 100, 118, 0) 34%),
+        radial-gradient(circle at 66% 64%, rgba(88, 100, 118, 0.12) 0 7%, rgba(88, 100, 118, 0) 14%),
+        radial-gradient(circle at 45% 72%, rgba(88, 100, 118, 0.10) 0 5%, rgba(88, 100, 118, 0) 11%),
+        radial-gradient(circle at 28% 57%, rgba(88, 100, 118, 0.11) 0 4%, rgba(88, 100, 118, 0) 9%),
+        radial-gradient(circle at 62% 31%, rgba(88, 100, 118, 0.09) 0 3.5%, rgba(88, 100, 118, 0) 8%),
+        radial-gradient(circle at 39% 35%, #fbf8ea 0 34%, #ece7d7 56%, #d4d6d6 78%, #b9c2cc 100%);
+    box-shadow:
+        inset -20px -16px 30px rgba(20, 30, 48, 0.38),
+        inset 10px 12px 24px rgba(255, 255, 255, 0.14),
+        0 0 60px 18px rgba(255, 250, 230, 0.07),
+        0 0 160px 70px rgba(150, 195, 255, 0.05);
+    opacity: 0.70;
 }
 
 #backdrop .moon::after {
@@ -139,7 +140,7 @@ body {
     background: linear-gradient(to top, rgba(3, 7, 12, 0.65), rgba(3, 7, 12, 0));
 }
 
-/* snowfall canvas */
+
 #snow {
     position: fixed;
     inset: 0;
@@ -149,7 +150,7 @@ body {
     pointer-events: none;
 }
 
-/* two winter girls, one per side */
+
 #waifu {
     position: fixed;
     right: 2vw;
@@ -183,7 +184,7 @@ body {
     mask-image: linear-gradient(to top, transparent 0%, #000 35%);
 }
 
-/* ---------- loader ---------- */
+/* loader */
 
 body.loading {
     overflow: hidden;
@@ -250,7 +251,7 @@ body.loading {
     opacity: 1;
 }
 
-/* ---------- terminal ---------- */
+/* terminal */
 
 .term {
     position: relative;
@@ -330,12 +331,13 @@ body.entered .term-line:nth-child(16) { animation-delay: 2.75s; }
     animation: blink 0.9s steps(1) infinite;
 }
 
-/* ---------- player ---------- */
+/* player */
 
 #player {
     position: fixed;
     left: 50%;
-    bottom: max(14px, env(safe-area-inset-bottom));
+    top: max(14px, env(safe-area-inset-top));
+    bottom: auto;
     transform: translateX(-50%);
     z-index: 6;
     width: min(760px, calc(100vw - 24px));
@@ -358,7 +360,17 @@ body.entered .term-line:nth-child(16) { animation-delay: 2.75s; }
     font-family: var(--font-hand);
     user-select: none;
     overflow: hidden;
+    touch-action: none;
     transition: opacity 0.4s ease, transform 0.4s var(--ease-out);
+}
+
+#player.is-dragging {
+    transition: none;
+}
+
+#player.is-dragging .player-meta,
+#player.is-dragging .player-art {
+    cursor: grabbing;
 }
 
 #player > * {
@@ -385,7 +397,7 @@ body.entered .term-line:nth-child(16) { animation-delay: 2.75s; }
 
 body.loading #player {
     opacity: 0;
-    transform: translate(-50%, 10px);
+    transform: translate(-50%, -10px);
     pointer-events: none;
 }
 
@@ -416,6 +428,8 @@ body.loading #player {
     width: 52px;
     height: 52px;
     border-radius: 11px;
+    cursor: grab;
+    touch-action: none;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.06);
     box-shadow:
@@ -487,6 +501,8 @@ body.loading #player {
     align-items: flex-start;
     gap: 1px;
     min-width: 0;
+    cursor: grab;
+    touch-action: none;
 }
 .player-title { max-width: 100%; font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .player-sub { max-width: 100%; font-size: 10px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -593,7 +609,7 @@ body.loading #player {
 
 #player.is-missing .player-sub { color: #e08a8a; }
 
-/* ---------- motion ---------- */
+/* motion */
 
 @keyframes rise {
     from {
@@ -606,7 +622,7 @@ body.loading #player {
     }
 }
 
-/* ---------- responsive ---------- */
+/* responsive */
 
 @media (max-width: 1100px) {
     #waifu, #waifu-left {
@@ -622,7 +638,8 @@ body.loading #player {
         padding: 8px 10px;
         border-radius: 12px;
         width: calc(100vw - 16px);
-        bottom: max(8px, env(safe-area-inset-bottom));
+        top: max(8px, env(safe-area-inset-top));
+        bottom: auto;
     }
     .player-art {
         width: 44px;

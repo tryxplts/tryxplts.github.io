@@ -1,4 +1,3 @@
-/* Glass player — play/pause, seek, volume, media session. */
 (() => {
     'use strict';
 
@@ -24,12 +23,18 @@
     if (titleEl) titleEl.textContent = TITLE;
     if (subEl) subEl.textContent = ARTIST;
 
+    const metaEl = player.querySelector('.player-meta');
+    if (metaEl) metaEl.title = 'Drag to move · double-click to reset';
+
     const store = {
         get(k) {
             try { return localStorage.getItem(k); } catch (e) { return null; }
         },
         set(k, v) {
             try { localStorage.setItem(k, v); } catch (e) { /* private mode */ }
+        },
+        remove(k) {
+            try { localStorage.removeItem(k); } catch (e) { /* private mode */ }
         }
     };
 
@@ -67,6 +72,93 @@
         player.classList.toggle('is-muted', v === 0);
     }
 
+    const POS_KEY = 'oxy-player-pos';
+
+    function clampToViewport(x, y) {
+        const m = 8;
+        const w = player.offsetWidth;
+        const h = player.offsetHeight;
+        const maxX = Math.max(m, window.innerWidth - w - m);
+        const maxY = Math.max(m, window.innerHeight - h - m);
+        return {
+            x: Math.min(Math.max(m, x), maxX),
+            y: Math.min(Math.max(m, y), maxY)
+        };
+    }
+
+    function setPos(x, y) {
+        const p = clampToViewport(x, y);
+        player.style.transform = 'none';
+        player.style.left = p.x + 'px';
+        player.style.top = p.y + 'px';
+        return p;
+    }
+
+    function topOffset() {
+        return window.matchMedia('(max-width: 640px)').matches ? 8 : 14;
+    }
+
+    function centerTop() {
+        setPos((window.innerWidth - player.offsetWidth) / 2, topOffset());
+    }
+
+    function savePos() {
+        const r = player.getBoundingClientRect();
+        store.set(POS_KEY, JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) }));
+    }
+
+    let drag = null;
+
+    player.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        if (e.target.closest('button, [role="slider"]')) return;
+
+        const r = player.getBoundingClientRect();
+        player.classList.add('is-dragging');
+        player.style.transform = 'none';
+        player.style.left = r.left + 'px';
+        player.style.top = r.top + 'px';
+
+        drag = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top };
+        try { player.setPointerCapture(e.pointerId); } catch (err) { /* synthetic events */ }
+        e.preventDefault();
+    });
+
+    player.addEventListener('pointermove', (e) => {
+        if (!drag || e.pointerId !== drag.id) return;
+        setPos(e.clientX - drag.dx, e.clientY - drag.dy);
+    });
+
+    function endDrag(e) {
+        if (!drag) return;
+        drag = null;
+        player.classList.remove('is-dragging');
+        try { player.releasePointerCapture(e.pointerId); } catch (err) { /* pointer already released */ }
+        savePos();
+    }
+
+    player.addEventListener('pointerup', endDrag);
+    player.addEventListener('pointercancel', endDrag);
+
+    player.addEventListener('dblclick', (e) => {
+        if (e.target.closest('button, [role="slider"]')) return;
+        centerTop();
+        store.remove(POS_KEY);
+    });
+
+    window.addEventListener('resize', () => {
+        if (!player.style.left) return;
+        const r = player.getBoundingClientRect();
+        setPos(r.left, r.top);
+    });
+
+    try {
+        const savedPos = JSON.parse(store.get(POS_KEY) || 'null');
+        if (savedPos && isFinite(savedPos.x) && isFinite(savedPos.y)) {
+            setPos(savedPos.x, savedPos.y);
+        }
+    } catch (err) { /* corrupt stored position */ }
+
     function paintPosition() {
         if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
         if (!isFinite(audio.duration) || audio.duration <= 0) return;
@@ -76,7 +168,7 @@
                 playbackRate: audio.playbackRate,
                 position: Math.min(audio.currentTime, audio.duration)
             });
-        } catch (e) { /* ignore */ }
+        } catch (e) { /* state rejected */ }
     }
 
     let userPaused = false;
@@ -110,7 +202,6 @@
         paint();
     });
 
-    // volume preferences
     const savedVol = parseFloat(store.get('oxy-volume'));
     audio.volume = isFinite(savedVol) ? Math.min(1, Math.max(0, savedVol)) : 0.65;
     audio.muted = store.get('oxy-muted') === '1';
@@ -138,7 +229,7 @@
             dragging = false;
             el.classList.remove('is-dragging');
             if (el.releasePointerCapture) {
-                try { el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+                try { el.releasePointerCapture(e.pointerId); } catch (err) { /* pointer already released */ }
             }
         };
         el.addEventListener('pointerup', stop);
@@ -213,7 +304,7 @@
             title: TITLE,
             artist: ARTIST,
             album: TITLE,
-            artwork: [{ src: 'assets/cover.jpg', sizes: '600x595', type: 'image/jpeg' }]
+            artwork: [{ src: 'assets/cover.jpg', sizes: '300x300', type: 'image/jpeg' }]
         });
         const actions = {
             play: () => audio.play().catch(() => {}),
@@ -229,7 +320,7 @@
             }
         };
         Object.keys(actions).forEach((name) => {
-            try { navigator.mediaSession.setActionHandler(name, actions[name]); } catch (e) { /* unsupported */ }
+            try { navigator.mediaSession.setActionHandler(name, actions[name]); } catch (e) { /* action not supported */ }
         });
     }
 
