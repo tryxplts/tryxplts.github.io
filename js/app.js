@@ -86,7 +86,7 @@
 
     function initTitle() {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        const titles = ['oxy — dev', 'oxy — C++ · C · Python', 'oxy — discord only'];
+        const titles = ['spydir', 'spydir — C++ · C · Python', 'spydir — discord only'];
         let i = 0;
         setInterval(() => {
             i = (i + 1) % titles.length;
