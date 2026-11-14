@@ -73,8 +73,8 @@
         const left = document.getElementById('waifu-left');
         if (!right && !left) return;
         const girls = [
-            'assets/waifu1.png',
-            'assets/waifu2.png'
+            'assets/girl-1.png',
+            'assets/girl-2.png'
         ];
         for (let k = girls.length - 1; k > 0; k--) {
             const j = Math.floor(Math.random() * (k + 1));
