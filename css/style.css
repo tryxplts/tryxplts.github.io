@@ -108,26 +108,14 @@ body {
     background: radial-gradient(circle, rgba(214, 232, 255, 0.10), rgba(214, 232, 255, 0) 62%);
 }
 
-#backdrop .pines {
+#backdrop .trees {
     position: absolute;
     left: -2%;
     right: -2%;
     bottom: 0;
-    background-repeat: no-repeat;
-    background-position: bottom center;
-    background-size: 100% 100%;
-}
-
-#backdrop .pines-far {
-    height: 30vh;
-    background-image: url("../assets/pines-far.svg");
-    opacity: 0.90;
-}
-
-#backdrop .pines-near {
-    height: 19vh;
-    background-image: url("../assets/pines-near.svg");
-    opacity: 1;
+    height: 32vh;
+    background: url("../assets/treeline.webp") bottom center / 100% 100% no-repeat;
+    opacity: 0.92;
 }
 
 #backdrop::after {
@@ -665,14 +653,8 @@ body.loading #player {
     .player-volume {
         width: 64px;
     }
-    #backdrop .pines {
-        background-size: auto 100%;
-    }
-    #backdrop .pines-far {
-        height: 22vh;
-    }
-    #backdrop .pines-near {
-        height: 15vh;
+    #backdrop .trees {
+        height: 24vh;
     }
     #waifu {
         max-height: 52vh;
