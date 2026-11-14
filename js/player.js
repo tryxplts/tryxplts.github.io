@@ -174,6 +174,12 @@
     let userPaused = false;
 
     playBtn.addEventListener('click', () => {
+        if (autoMuted) {
+            autoMuted = false;
+            audio.muted = false;
+            if (audio.volume === 0) audio.volume = 0.65;
+            paintVolume();
+        }
         if (audio.paused) {
             userPaused = false;
             audio.play().catch(() => {});
@@ -206,6 +212,18 @@
     audio.volume = isFinite(savedVol) ? Math.min(1, Math.max(0, savedVol)) : 0.65;
     audio.muted = store.get('oxy-muted') === '1';
     paintVolume();
+
+    let autoMuted = false;
+
+    function startAutoplay() {
+        if (audio.muted || audio.volume === 0) return;
+        audio.play().catch(() => {
+            autoMuted = true;
+            audio.muted = true;
+            paintVolume();
+            audio.play().catch(() => {});
+        });
+    }
 
     function ratioFromEvent(el, e) {
         const r = el.getBoundingClientRect();
@@ -293,6 +311,12 @@
     function firstGesture(e) {
         document.removeEventListener('pointerdown', firstGesture);
         document.removeEventListener('keydown', firstGesture);
+        if (autoMuted) {
+            autoMuted = false;
+            audio.muted = false;
+            if (audio.volume === 0) audio.volume = 0.65;
+            paintVolume();
+        }
         if (e && e.target && player.contains(e.target)) return;
         if (!userPaused && audio.paused) audio.play().catch(() => {});
     }
@@ -326,4 +350,5 @@
 
     paint();
     paintVolume();
+    startAutoplay();
 })();
